@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>DevOps Platform Lab</title>
+</head>
+<body>
+    <h1>Frontend OK</h1>
+
+    <button onclick="checkBackend()">
+        Check Backend
+    </button>
+
+    <p id="result"></p>
+
+    <script>
+        async function checkBackend() {
+            const response = await fetch('/api');
+            const text = await response.text();
+
+            document.getElementById('result').innerText = text;
+        }
+    </script>
+</body>
+</html>

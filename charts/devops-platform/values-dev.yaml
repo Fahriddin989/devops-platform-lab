@@ -1,0 +1,5 @@
+global:
+  imagePullPolicy: Never
+
+ingress:
+  host: app.local

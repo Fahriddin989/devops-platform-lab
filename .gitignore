@@ -1,0 +1,8 @@
+# local backup / broken manifests
+*.bak-*
+*.broken-*
+*.tmp
+*.rendered.yaml
+
+# never commit real Kubernetes Secret manifests
+*secret*.yaml

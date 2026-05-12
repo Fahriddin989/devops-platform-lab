@@ -1,0 +1,111 @@
+{{- if .Values.postgres.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+  namespace: {{ .Release.Namespace }}
+
+spec:
+  replicas: {{ .Values.postgres.replicaCount }}
+
+  selector:
+    matchLabels:
+      app: {{ .Values.postgres.labels.app }}
+
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.postgres.labels.app }}
+
+    spec:
+      serviceAccountName: {{ .Values.postgres.serviceAccount.name }}
+      automountServiceAccountToken: {{ .Values.postgres.serviceAccount.automountServiceAccountToken }}
+
+      securityContext:
+        fsGroup: {{ .Values.postgres.podSecurityContext.fsGroup }}
+        fsGroupChangePolicy: {{ .Values.postgres.podSecurityContext.fsGroupChangePolicy }}
+
+      initContainers:
+        - name: {{ .Values.postgres.initContainer.name }}
+          image: {{ .Values.postgres.image.repository }}:{{ .Values.postgres.image.tag }}
+          command:
+            - sh
+            - -c
+            - |
+              mkdir -p /var/lib/postgresql/data /var/run/postgresql /tmp
+              chown -R 70:70 /var/lib/postgresql/data /var/run/postgresql /tmp
+              chmod 700 /var/lib/postgresql/data
+              chmod 3775 /var/run/postgresql
+              chmod 1777 /tmp
+          securityContext:
+            runAsUser: {{ .Values.postgres.initContainer.runAsUser }}
+            allowPrivilegeEscalation: {{ .Values.postgres.initContainer.allowPrivilegeEscalation }}
+          volumeMounts:
+            - name: postgres-data
+              mountPath: /var/lib/postgresql/data
+            - name: postgres-run
+              mountPath: /var/run/postgresql
+            - name: tmp
+              mountPath: /tmp
+
+      containers:
+        - name: postgres
+          image: {{ .Values.postgres.image.repository }}:{{ .Values.postgres.image.tag }}
+          imagePullPolicy: {{ .Values.postgres.image.pullPolicy }}
+
+          securityContext:
+            runAsNonRoot: {{ .Values.postgres.securityContext.runAsNonRoot }}
+            runAsUser: {{ .Values.postgres.securityContext.runAsUser }}
+            runAsGroup: {{ .Values.postgres.securityContext.runAsGroup }}
+            allowPrivilegeEscalation: {{ .Values.postgres.securityContext.allowPrivilegeEscalation }}
+            readOnlyRootFilesystem: {{ .Values.postgres.securityContext.readOnlyRootFilesystem }}
+            capabilities:
+              drop:
+                - ALL
+
+          env:
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.postgres.secret.name }}
+                  key: {{ .Values.postgres.secret.databaseKey }}
+
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.postgres.secret.name }}
+                  key: {{ .Values.postgres.secret.userKey }}
+
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.postgres.secret.name }}
+                  key: {{ .Values.postgres.secret.passwordKey }}
+
+          ports:
+            - containerPort: {{ .Values.postgres.container.port }}
+
+          resources:
+            requests:
+              cpu: {{ .Values.postgres.resources.requests.cpu | quote }}
+              memory: {{ .Values.postgres.resources.requests.memory | quote }}
+            limits:
+              cpu: {{ .Values.postgres.resources.limits.cpu | quote }}
+              memory: {{ .Values.postgres.resources.limits.memory | quote }}
+
+          volumeMounts:
+            - name: postgres-data
+              mountPath: /var/lib/postgresql/data
+            - name: postgres-run
+              mountPath: /var/run/postgresql
+            - name: tmp
+              mountPath: /tmp
+
+      volumes:
+        - name: postgres-data
+          emptyDir: {}
+        - name: postgres-run
+          emptyDir: {}
+        - name: tmp
+          emptyDir: {}
+{{- end }}

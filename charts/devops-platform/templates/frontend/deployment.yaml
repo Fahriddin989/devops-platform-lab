@@ -1,0 +1,56 @@
+{{- if .Values.frontend.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: {{ .Values.frontend.replicaCount }}
+
+  selector:
+    matchLabels:
+      app: {{ .Values.frontend.labels.app }}
+
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.frontend.labels.app }}
+
+    spec:
+      serviceAccountName: {{ .Values.frontend.serviceAccount.name }}
+      automountServiceAccountToken: {{ .Values.frontend.serviceAccount.automountServiceAccountToken }}
+
+      containers:
+        - name: frontend
+          image: {{ .Values.frontend.image.repository }}:{{ .Values.frontend.image.tag }}
+          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+
+          securityContext:
+            runAsNonRoot: {{ .Values.frontend.securityContext.runAsNonRoot }}
+            runAsUser: {{ .Values.frontend.securityContext.runAsUser }}
+            runAsGroup: {{ .Values.frontend.securityContext.runAsGroup }}
+            allowPrivilegeEscalation: {{ .Values.frontend.securityContext.allowPrivilegeEscalation }}
+            readOnlyRootFilesystem: {{ .Values.frontend.securityContext.readOnlyRootFilesystem }}
+            capabilities:
+              drop:
+                - ALL
+
+          ports:
+            - containerPort: {{ .Values.frontend.container.port }}
+
+          resources:
+            requests:
+              cpu: {{ .Values.frontend.resources.requests.cpu | quote }}
+              memory: {{ .Values.frontend.resources.requests.memory | quote }}
+            limits:
+              cpu: {{ .Values.frontend.resources.limits.cpu | quote }}
+              memory: {{ .Values.frontend.resources.limits.memory | quote }}
+
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+
+      volumes:
+        - name: tmp
+          emptyDir: {}
+{{- end }}

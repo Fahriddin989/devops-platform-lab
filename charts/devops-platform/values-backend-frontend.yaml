@@ -1,0 +1,14 @@
+backend:
+  enabled: true
+
+frontend:
+  enabled: true
+
+redis:
+  enabled: false
+
+postgres:
+  enabled: false
+
+ingress:
+  enabled: false

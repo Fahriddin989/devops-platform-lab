@@ -1,0 +1,234 @@
+global:
+  imagePullPolicy: IfNotPresent
+
+backend:
+  enabled: true
+  replicaCount: 1
+
+  labels:
+    app: backend
+
+  image:
+    repository: backend
+    tag: v1.9
+
+  rollout:
+    configVersion: backend-secret-v12-password-fix
+
+  serviceAccount:
+    create: true
+    name: backend-sa
+    automountServiceAccountToken: false
+
+  config:
+    name: backend-config
+    redisHost: redis
+    redisPort: "6379"
+    dbHost: postgres
+    dbPort: "5432"
+    dbName: app
+    appEnv: dev
+
+  secret:
+    name: backend-secret
+    dbUserKey: DB_USER
+    dbPasswordKey: DB_PASSWORD
+
+  service:
+    name: backend
+    type: ClusterIP
+    port: 5000
+    targetPort: 5000
+
+  container:
+    port: 5000
+
+  strategy:
+    maxUnavailable: 0
+    maxSurge: 1
+
+  terminationGracePeriodSeconds: 30
+
+  lifecycle:
+    preStopSleepSeconds: 5
+
+  probes:
+    readiness:
+      path: /health
+      initialDelaySeconds: 5
+      periodSeconds: 5
+      timeoutSeconds: 2
+      failureThreshold: 3
+    liveness:
+      path: /health
+      initialDelaySeconds: 45
+      periodSeconds: 10
+      timeoutSeconds: 2
+      failureThreshold: 3
+
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "128Mi"
+    limits:
+      cpu: "500m"
+      memory: "256Mi"
+
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 10001
+    runAsGroup: 10001
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+
+frontend:
+  enabled: true
+  replicaCount: 1
+
+  labels:
+    app: frontend
+
+  image:
+    repository: frontend
+    tag: v1.2
+
+  serviceAccount:
+    create: true
+    name: frontend-sa
+    automountServiceAccountToken: false
+
+  service:
+    name: frontend
+    type: ClusterIP
+    port: 80
+    targetPort: 8080
+
+  container:
+    port: 8080
+
+  resources:
+    requests:
+      cpu: "50m"
+      memory: "64Mi"
+    limits:
+      cpu: "200m"
+      memory: "128Mi"
+
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 101
+    runAsGroup: 101
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+
+redis:
+  enabled: true
+  replicaCount: 1
+
+  labels:
+    app: redis
+
+  image:
+    repository: redis
+    tag: 7-alpine
+    pullPolicy: IfNotPresent
+
+  serviceAccount:
+    create: true
+    name: redis-sa
+    automountServiceAccountToken: false
+
+  service:
+    name: redis
+    type: ClusterIP
+    port: 6379
+    targetPort: 6379
+
+  container:
+    port: 6379
+
+  podSecurityContext:
+    fsGroup: 1000
+    fsGroupChangePolicy: OnRootMismatch
+
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 999
+    runAsGroup: 1000
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+
+  resources:
+    requests:
+      cpu: "50m"
+      memory: "64Mi"
+    limits:
+      cpu: "200m"
+      memory: "128Mi"
+
+postgres:
+  enabled: true
+  replicaCount: 1
+
+  labels:
+    app: postgres
+
+  image:
+    repository: postgres
+    tag: 16-alpine
+    pullPolicy: IfNotPresent
+
+  serviceAccount:
+    create: true
+    name: postgres-sa
+    automountServiceAccountToken: false
+
+  service:
+    name: postgres
+    type: ClusterIP
+    port: 5432
+    targetPort: 5432
+
+  container:
+    port: 5432
+
+  secret:
+    name: postgres-secret
+    databaseKey: POSTGRES_DB
+    userKey: POSTGRES_USER
+    passwordKey: POSTGRES_PASSWORD
+
+  podSecurityContext:
+    fsGroup: 70
+    fsGroupChangePolicy: OnRootMismatch
+
+  initContainer:
+    name: postgres-volume-permissions
+    runAsUser: 0
+    allowPrivilegeEscalation: false
+
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 70
+    runAsGroup: 70
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "256Mi"
+    limits:
+      cpu: "500m"
+      memory: "512Mi"
+
+ingress:
+  enabled: true
+  name: devops-ingress
+  className: nginx
+  host: app.example.com
+  path: /
+  pathType: Prefix
+  service:
+    name: frontend
+    port: 80

@@ -1,0 +1,14 @@
+{{- if .Values.backend.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.backend.config.name }}
+  namespace: {{ .Release.Namespace }}
+data:
+  REDIS_HOST: {{ .Values.backend.config.redisHost | quote }}
+  REDIS_PORT: {{ .Values.backend.config.redisPort | quote }}
+  DB_HOST: {{ .Values.backend.config.dbHost | quote }}
+  DB_PORT: {{ .Values.backend.config.dbPort | quote }}
+  DB_NAME: {{ .Values.backend.config.dbName | quote }}
+  APP_ENV: {{ .Values.backend.config.appEnv | quote }}
+{{- end }}

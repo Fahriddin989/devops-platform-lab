@@ -1,0 +1,64 @@
+{{- if .Values.redis.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: {{ .Values.redis.replicaCount }}
+
+  selector:
+    matchLabels:
+      app: {{ .Values.redis.labels.app }}
+
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.redis.labels.app }}
+
+    spec:
+      serviceAccountName: {{ .Values.redis.serviceAccount.name }}
+      automountServiceAccountToken: {{ .Values.redis.serviceAccount.automountServiceAccountToken }}
+
+      securityContext:
+        fsGroup: {{ .Values.redis.podSecurityContext.fsGroup }}
+        fsGroupChangePolicy: {{ .Values.redis.podSecurityContext.fsGroupChangePolicy }}
+
+      containers:
+        - name: redis
+          image: {{ .Values.redis.image.repository }}:{{ .Values.redis.image.tag }}
+          imagePullPolicy: {{ .Values.redis.image.pullPolicy }}
+
+          securityContext:
+            runAsNonRoot: {{ .Values.redis.securityContext.runAsNonRoot }}
+            runAsUser: {{ .Values.redis.securityContext.runAsUser }}
+            runAsGroup: {{ .Values.redis.securityContext.runAsGroup }}
+            allowPrivilegeEscalation: {{ .Values.redis.securityContext.allowPrivilegeEscalation }}
+            readOnlyRootFilesystem: {{ .Values.redis.securityContext.readOnlyRootFilesystem }}
+            capabilities:
+              drop:
+                - ALL
+
+          ports:
+            - containerPort: {{ .Values.redis.container.port }}
+
+          resources:
+            requests:
+              cpu: {{ .Values.redis.resources.requests.cpu | quote }}
+              memory: {{ .Values.redis.resources.requests.memory | quote }}
+            limits:
+              cpu: {{ .Values.redis.resources.limits.cpu | quote }}
+              memory: {{ .Values.redis.resources.limits.memory | quote }}
+
+          volumeMounts:
+            - name: redis-data
+              mountPath: /data
+            - name: tmp
+              mountPath: /tmp
+
+      volumes:
+        - name: redis-data
+          emptyDir: {}
+        - name: tmp
+          emptyDir: {}
+{{- end }}

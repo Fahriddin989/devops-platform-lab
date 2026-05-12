@@ -1,0 +1,15 @@
+{{- if .Values.redis.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.redis.service.name }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  type: {{ .Values.redis.service.type }}
+  selector:
+    app: {{ .Values.redis.labels.app }}
+  ports:
+    - port: {{ .Values.redis.service.port }}
+      targetPort: {{ .Values.redis.service.targetPort }}
+      protocol: TCP
+{{- end }}
