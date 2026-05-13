@@ -4,6 +4,8 @@ kind: Deployment
 metadata:
   name: postgres
   namespace: {{ .Release.Namespace }}
+  labels:
+{{ include "devops-platform.componentLabels" (dict "root" . "component" "postgres") | nindent 4 }}
 
 spec:
   replicas: {{ .Values.postgres.replicaCount }}
