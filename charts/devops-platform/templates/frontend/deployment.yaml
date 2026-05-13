@@ -25,7 +25,7 @@ spec:
       containers:
         - name: frontend
           image: {{ .Values.frontend.image.repository }}:{{ .Values.frontend.image.tag }}
-          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+          imagePullPolicy: {{ .Values.frontend.image.pullPolicy }}
 
           securityContext:
             runAsNonRoot: {{ .Values.frontend.securityContext.runAsNonRoot }}

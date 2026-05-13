@@ -37,7 +37,7 @@ spec:
       containers:
         - name: backend
           image: {{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag }}
-          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+          imagePullPolicy: {{ .Values.backend.image.pullPolicy }}
 
           securityContext:
             runAsNonRoot: {{ .Values.backend.securityContext.runAsNonRoot }}
