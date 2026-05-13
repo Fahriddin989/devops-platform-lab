@@ -4,6 +4,8 @@ kind: ConfigMap
 metadata:
   name: {{ .Values.backend.config.name }}
   namespace: {{ .Release.Namespace }}
+  labels:
+{{ include "devops-platform.componentLabels" (dict "root" . "component" "backend") | nindent 4 }}
 data:
   REDIS_HOST: {{ .Values.backend.config.redisHost | quote }}
   REDIS_PORT: {{ .Values.backend.config.redisPort | quote }}
