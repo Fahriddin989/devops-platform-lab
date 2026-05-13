@@ -4,6 +4,8 @@ kind: Service
 metadata:
   name: {{ .Values.redis.service.name }}
   namespace: {{ .Release.Namespace }}
+  labels:
+{{ include "devops-platform.componentLabels" (dict "root" . "component" "redis") | nindent 4 }}
 spec:
   type: {{ .Values.redis.service.type }}
   selector:
