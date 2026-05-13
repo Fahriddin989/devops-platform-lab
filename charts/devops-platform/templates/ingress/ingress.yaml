@@ -4,6 +4,8 @@ kind: Ingress
 metadata:
   name: {{ .Values.ingress.name }}
   namespace: {{ .Release.Namespace }}
+  labels:
+{{ include "devops-platform.componentLabels" (dict "root" . "component" "ingress") | nindent 4 }}
 spec:
   ingressClassName: {{ .Values.ingress.className }}
 
