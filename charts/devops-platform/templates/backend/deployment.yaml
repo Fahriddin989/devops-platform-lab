@@ -8,6 +8,7 @@ metadata:
 {{ include "devops-platform.componentLabels" (dict "root" . "component" "backend") | nindent 4 }}
 spec:
   replicas: {{ .Values.backend.replicaCount }}
+  revisionHistoryLimit: {{ .Values.backend.revisionHistoryLimit }}
 
   strategy:
     type: RollingUpdate

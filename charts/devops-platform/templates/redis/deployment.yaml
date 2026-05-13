@@ -8,6 +8,7 @@ metadata:
 {{ include "devops-platform.componentLabels" (dict "root" . "component" "redis") | nindent 4 }}
 spec:
   replicas: {{ .Values.redis.replicaCount }}
+  revisionHistoryLimit: {{ .Values.redis.revisionHistoryLimit }}
 
   selector:
     matchLabels:

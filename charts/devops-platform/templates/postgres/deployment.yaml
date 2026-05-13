@@ -9,6 +9,7 @@ metadata:
 
 spec:
   replicas: {{ .Values.postgres.replicaCount }}
+  revisionHistoryLimit: {{ .Values.postgres.revisionHistoryLimit }}
 
   selector:
     matchLabels:

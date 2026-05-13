@@ -1,6 +1,7 @@
 backend:
   enabled: true
   replicaCount: 1
+  revisionHistoryLimit: 5
 
   labels:
     app: backend
@@ -82,6 +83,7 @@ backend:
 frontend:
   enabled: true
   replicaCount: 1
+  revisionHistoryLimit: 5
 
   labels:
     app: frontend
@@ -123,6 +125,7 @@ frontend:
 redis:
   enabled: true
   replicaCount: 1
+  revisionHistoryLimit: 5
 
   labels:
     app: redis
@@ -168,6 +171,7 @@ redis:
 postgres:
   enabled: true
   replicaCount: 1
+  revisionHistoryLimit: 5
 
   labels:
     app: postgres
