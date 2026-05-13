@@ -1,3 +1,0 @@
-backend:
-  rollout:
-    configVersion: helm-phase4-upgrade-v2
