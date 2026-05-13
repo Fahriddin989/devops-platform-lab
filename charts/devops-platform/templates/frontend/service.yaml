@@ -4,6 +4,8 @@ kind: Service
 metadata:
   name: {{ .Values.frontend.service.name }}
   namespace: {{ .Release.Namespace }}
+  labels:
+{{ include "devops-platform.componentLabels" (dict "root" . "component" "frontend") | nindent 4 }}
 spec:
   type: {{ .Values.frontend.service.type }}
   selector:

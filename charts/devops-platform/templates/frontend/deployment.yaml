@@ -4,6 +4,8 @@ kind: Deployment
 metadata:
   name: frontend
   namespace: {{ .Release.Namespace }}
+  labels:
+{{ include "devops-platform.componentLabels" (dict "root" . "component" "frontend") | nindent 4 }}
 spec:
   replicas: {{ .Values.frontend.replicaCount }}
 
