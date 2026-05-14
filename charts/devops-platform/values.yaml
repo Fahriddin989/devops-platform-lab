@@ -12,7 +12,7 @@ backend:
     pullPolicy: IfNotPresent
 
   rollout:
-    configVersion: phase4-cleanup-rollout-v1
+    configVersion: phase5-gitops-rollout-v1
 
   serviceAccount:
     create: true
