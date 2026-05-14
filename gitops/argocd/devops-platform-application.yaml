@@ -18,4 +18,7 @@ spec:
     server: https://kubernetes.default.svc
     namespace: devops-lab
 
-  syncPolicy: {}
+  syncPolicy:
+    automated:
+      selfHeal: true
+      prune: false 
