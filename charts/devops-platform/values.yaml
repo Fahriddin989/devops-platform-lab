@@ -7,7 +7,7 @@ backend:
     app: backend
 
   image:
-    repository: backend
+    repository: ghcr.io/fahriddin989/devops-platform-backend
     tag: v1.9
     pullPolicy: IfNotPresent
 
@@ -89,7 +89,7 @@ frontend:
     app: frontend
 
   image:
-    repository: frontend
+    repository: ghcr.io/fahriddin989/devops-platform-frontend
     tag: v1.2
     pullPolicy: IfNotPresent
 

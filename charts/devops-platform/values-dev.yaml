@@ -1,10 +1,2 @@
-backend:
-  image:
-    pullPolicy: Never
-
-frontend:
-  image:
-    pullPolicy: Never
-
 ingress:
   host: app.local
