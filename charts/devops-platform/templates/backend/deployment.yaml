@@ -29,6 +29,7 @@ spec:
         prometheus.io/scrape: "true"
         prometheus.io/path: "/metrics"
         prometheus.io/port: {{ .Values.backend.container.port | quote }}
+        linkerd.io/inject: "enabled"
 
     spec:
       serviceAccountName: {{ .Values.backend.serviceAccount.name }}

@@ -18,6 +18,8 @@ spec:
     metadata:
       labels:
         app: {{ .Values.frontend.labels.app }}
+      annotations:
+        linkerd.io/inject: "enabled"
 
     spec:
       serviceAccountName: {{ .Values.frontend.serviceAccount.name }}
