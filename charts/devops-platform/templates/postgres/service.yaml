@@ -6,6 +6,8 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
 {{ include "devops-platform.componentLabels" (dict "root" . "component" "postgres") | nindent 4 }}
+  annotations:
+    config.linkerd.io/opaque-ports: "5432"
 spec:
   type: {{ .Values.postgres.service.type }}
 
