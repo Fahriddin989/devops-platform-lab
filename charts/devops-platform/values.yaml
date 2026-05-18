@@ -90,7 +90,7 @@ frontend:
 
   image:
     repository: ghcr.io/fahriddin989/devops-platform-frontend
-    tag: v1.3
+    tag: v1.4
     pullPolicy: IfNotPresent
 
   serviceAccount:
