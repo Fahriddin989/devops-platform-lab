@@ -19,6 +19,9 @@ spec:
     metadata:
       labels:
         app: {{ .Values.postgres.labels.app }}
+      annotations:
+        linkerd.io/inject: "enabled"
+        config.linkerd.io/opaque-ports: "5432"
 
     spec:
       serviceAccountName: {{ .Values.postgres.serviceAccount.name }}

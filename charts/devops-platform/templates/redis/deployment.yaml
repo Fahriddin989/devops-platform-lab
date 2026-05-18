@@ -18,6 +18,9 @@ spec:
     metadata:
       labels:
         app: {{ .Values.redis.labels.app }}
+      annotations: 
+        linkerd.io/inject: "enabled"
+        config.linkerd.io/opaque-ports: "6379"
 
     spec:
       serviceAccountName: {{ .Values.redis.serviceAccount.name }}
