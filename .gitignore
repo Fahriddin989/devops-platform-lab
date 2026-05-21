@@ -6,3 +6,5 @@
 
 # never commit real Kubernetes Secret manifests
 *secret*.yaml
+__pycache__/
+*.py[cod]
