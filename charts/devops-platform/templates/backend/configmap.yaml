@@ -13,4 +13,7 @@ data:
   DB_PORT: {{ .Values.backend.config.dbPort | quote }}
   DB_NAME: {{ .Values.backend.config.dbName | quote }}
   APP_ENV: {{ .Values.backend.config.appEnv | quote }}
+  SERVICE_NAME: {{ .Values.backend.config.serviceName | quote }}
+  OTEL_ENABLED: {{ .Values.backend.config.otelEnabled | quote }}
+  OTEL_EXPORTER_OTLP_ENDPOINT: {{ .Values.backend.config.otelExporterOtlpEndpoint | quote }}
 {{- end }}

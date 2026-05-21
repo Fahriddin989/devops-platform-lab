@@ -1,6 +1,3 @@
-from flask import Flask, Response, request, g
-from prometheus_client import Counter, generate_latest
-from werkzeug.exceptions import HTTPException
 import psycopg2
 import redis
 import time
@@ -9,18 +6,68 @@ import json
 import uuid
 import logging
 
+from flask import Flask, Response, request, g
+from prometheus_client import Counter, generate_latest
+from werkzeug.exceptions import HTTPException
+
+from opentelemetry import trace
+from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
+from opentelemetry.instrumentation.flask import FlaskInstrumentor
+from opentelemetry.sdk.resources import Resource
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
+
+
 time.sleep(20)
-
-app = Flask(__name__)
-
-# Disable default Flask/Werkzeug access logs.
-# We emit structured JSON logs ourselves.
-logging.getLogger("werkzeug").disabled = True
 
 SERVICE_NAME = os.getenv("SERVICE_NAME", "backend")
 APP_ENV = os.getenv("APP_ENV", "dev")
 POD_NAME = os.getenv("HOSTNAME", "unknown")
 LOG_PROBES = os.getenv("LOG_PROBES", "false").lower() == "true"
+
+OTEL_ENABLED = os.getenv("OTEL_ENABLED", "false").lower() == "true"
+OTEL_EXPORTER_OTLP_ENDPOINT = os.getenv(
+    "OTEL_EXPORTER_OTLP_ENDPOINT",
+    "http://otel-collector.tracing.svc.cluster.local:4317"
+)
+
+
+def setup_tracing():
+    if not OTEL_ENABLED:
+        return
+
+    resource = Resource.create({
+        "service.name": SERVICE_NAME,
+        "service.namespace": "devops-platform",
+        "deployment.environment": APP_ENV,
+        "k8s.pod.name": POD_NAME,
+    })
+
+    provider = TracerProvider(resource=resource)
+
+    otlp_exporter = OTLPSpanExporter(
+        endpoint=OTEL_EXPORTER_OTLP_ENDPOINT,
+        insecure=True,
+    )
+
+    provider.add_span_processor(BatchSpanProcessor(otlp_exporter))
+    trace.set_tracer_provider(provider)
+
+
+app = Flask(__name__)
+
+setup_tracing()
+
+if OTEL_ENABLED:
+    FlaskInstrumentor().instrument_app(
+        app,
+        excluded_urls="/health,/metrics",
+    )
+
+# Disable default Flask/Werkzeug access logs.
+# We emit structured JSON logs ourselves.
+logging.getLogger("werkzeug").disabled = True
+
 
 REQUEST_COUNT = Counter(
     "http_requests_total",

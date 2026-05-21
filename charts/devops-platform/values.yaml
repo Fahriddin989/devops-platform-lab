@@ -8,11 +8,11 @@ backend:
 
   image:
     repository: ghcr.io/fahriddin989/devops-platform-backend
-    tag: v1.10
+    tag: v1.11
     pullPolicy: IfNotPresent
 
   rollout:
-    configVersion: phase5-gitops-rollout-v1
+    configVersion: phase6-otel-backend-v1
 
   serviceAccount:
     create: true
@@ -27,6 +27,9 @@ backend:
     dbPort: "5432"
     dbName: app
     appEnv: dev
+    serviceName: backend
+    otelEnabled: "true"
+    otelExporterOtlpEndpoint: http://otel-collector.tracing.svc.cluster.local:4317
 
   secret:
     name: backend-secret

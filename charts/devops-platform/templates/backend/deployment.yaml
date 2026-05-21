@@ -140,6 +140,24 @@ spec:
                 configMapKeyRef:
                   name: {{ .Values.backend.config.name }}
                   key: APP_ENV
+          
+            - name: SERVICE_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.backend.config.name }}
+                  key: SERVICE_NAME
+
+            - name: OTEL_ENABLED
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.backend.config.name }}
+                  key: OTEL_ENABLED
+
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.backend.config.name }}
+                  key: OTEL_EXPORTER_OTLP_ENDPOINT
 
       volumes:
         - name: tmp
